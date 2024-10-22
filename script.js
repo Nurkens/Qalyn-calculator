@@ -52,7 +52,7 @@ btn.addEventListener('click', () => {
 
     
     if (!education || !networth || !caste || !age) {
-        console.error("One or more necessary fields are not selected.");
+        console.error("You forgot to pick one or more required fields.");
         return;
     }
 
