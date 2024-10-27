@@ -39,7 +39,7 @@ const qalyn = {
 
 btn.addEventListener('click', () => {
     const startingPriceElement = document.querySelector('.starting-price');
-    const startingPriceValue = parseFloat(startingPriceElement.value); 
+    const startingPriceValue = startingPriceElement.value; 
     
     const name = document.querySelector('.name');
     const education = document.querySelector('#education');
