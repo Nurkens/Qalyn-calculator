@@ -110,7 +110,7 @@ function sendLetters(name, finalPrice) {
 
     output.innerHTML = `
         <div>Total Price for ${name.value}: $${finalPrice}</div>
-        <div>Love Letter: ${loveLetter.value}</div>
+        <div>Love Letter for ${name.value}: ${loveLetter.value}</div>
     `;
     output.style.display = 'block';
     return output;
