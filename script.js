@@ -37,66 +37,81 @@ const qalyn = {
     }
 };
 
-
-
-
 btn.addEventListener('click', () => {
-    let startingPrice = 100; 
+    const startingPriceElement = document.querySelector('.starting-price');
+    const startingPriceValue = parseFloat(startingPriceElement.value); 
     
+    const name = document.querySelector('.name');
     const education = document.querySelector('#education');
     const networth = document.querySelector('#networth');
     const caste = document.querySelector('#caste');
-    const skills = document.querySelectorAll('input[name="skills"]:checked'); 
     const age = document.querySelector('input[name="age"]:checked');
     const reputation = document.querySelectorAll('input[name="reputation"]:checked');
 
-    
-    if (!education || !networth || !caste || !age) {
-        console.error("You forgot to pick one or more required fields.");
-        return;
-    }
-
-    calculatePrice(education, networth, caste, skills, age, reputation, startingPrice,); 
+    const finalPrice = calculatePrice(startingPriceValue, education, networth, caste, age, reputation); 
+    sendLetters(name, finalPrice); 
 });
 
-function calculatePrice(education, networth, caste, skills, age, reputation, startingPrice,) {
-    const totalPrice = document.querySelector('.priceTotal');
+function calculatePrice(startingPrice, education, networth, caste, age, reputation) {
+    let multiplier = 1; 
+    let bonus = 0;  
+
     const selectedEducation = education.value;
     if (qalyn.education[selectedEducation]) {
-        startingPrice *= qalyn.education[selectedEducation].coeff; 
+        multiplier *= qalyn.education[selectedEducation].coeff; 
     }
 
     const selectedNetWorth = networth.value; 
     if (qalyn.netWorth[selectedNetWorth]) {
-        startingPrice *= qalyn.netWorth[selectedNetWorth].coeff; 
+        multiplier *= qalyn.netWorth[selectedNetWorth].coeff; 
     }
 
-    const selectedCaste = caste.value; 
-    if (qalyn.caste[selectedCaste]) {
-        startingPrice += qalyn.caste[selectedCaste].bonus; 
+    if (age && qalyn.age[age.value]) {
+        multiplier *= qalyn.age[age.value].coeff;
     }
-
-    skills.forEach(skill => {
-        if (qalyn.skills[skill.value]) {
-            startingPrice += qalyn.skills[skill.value].bonus; 
-        }
-    });
-
-   const selectedAge = age.value; 
-   if (selectedAge && qalyn.age[selectedAge]) {
-        startingPrice *= qalyn.age[selectedAge].coeff;
-   }
-
 
     reputation.forEach(rep => {
         if (rep.value === 'generalGossip') {
-            startingPrice += qalyn.reputation.generalGossip.bonus; 
+            bonus += qalyn.reputation.generalGossip.bonus; 
         } else if (qalyn.reputation[rep.value]) {
-            startingPrice *= qalyn.reputation[rep.value].coeff; 
+            multiplier *= qalyn.reputation[rep.value].coeff; 
         }
     });
 
-    console.log("Calculated Price:", startingPrice);
 
-    totalPrice.innerHTML = `total Price: $${startingPrice}`;
+    document.querySelectorAll('.skills input[type="checkbox"]').forEach(item => {
+        if (item.checked) {
+            bonus += qalyn.skills[item.id].bonus; 
+        }
+    });
+
+    const selectedCaste = caste.value; 
+    if (qalyn.caste[selectedCaste]) {
+        bonus += qalyn.caste[selectedCaste].bonus; 
+    }
+
+    const finalPrice = (startingPrice * multiplier) + bonus;
+
+    console.log("Starting Price:", startingPrice);
+    console.log("Multiplier:", multiplier);
+    console.log("Bonus:", bonus);
+    console.log("Final Price:", finalPrice);
+    return finalPrice;
+}
+
+function sendLetters(name, finalPrice) {
+    if (name.value === '' || finalPrice === '') {
+        alert('You need to write name and starting price');
+        return; 
+    }
+
+    const loveLetter = document.querySelector('.love-letter');
+    const output = document.querySelector('.output');
+
+    output.innerHTML = `
+        <div>Total Price for ${name.value}: $${finalPrice}</div>
+        <div>Love Letter: ${loveLetter.value}</div>
+    `;
+    output.style.display = 'block';
+    return output;
 }
